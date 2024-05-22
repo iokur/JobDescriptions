@@ -13,7 +13,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json'
         },
-        // jobID göndermeye gerek yok, sadece userID ve description gönderiyoruz
+        // sadece userID ve description gönderiyoruz
         body: JSON.stringify({ userID, description })
       });
       const data = await response.json();
