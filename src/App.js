@@ -1,46 +1,72 @@
 import React, { useState } from 'react';
 
-function App() {
-  const [userID, setUserID] = useState('');
-  const [description, setDescription] = useState('');
+const App = () => {
+  const [jobTitle, setJobTitle] = useState('');
+  const [jobDescription, setJobDescription] = useState('');
+  const [responseMessage, setResponseMessage] = useState('');
+  const [jobID, setJobID] = useState('');
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Data to be sent in the request body
+    const data = {
+      jobTitle: jobTitle,
+      jobDescription: jobDescription
+    };
+
     try {
-      // Yeni API URL'nizi burada kullanın
-      const response = await fetch('https://pwpb7feut3.execute-api.us-east-1.amazonaws.com/dev/jobdescription', {
+      // Sending POST request to the API
+      const response = await fetch('https://wrptlv2os4.execute-api.us-east-1.amazonaws.com/dev/job', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        // sadece userID ve description gönderiyoruz
-        body: JSON.stringify({ userID, description })
+        body: JSON.stringify(data)
       });
-      const data = await response.json();
-      console.log(data);
-      alert('Job description saved successfully!');
+
+      // Parsing JSON response
+      const responseData = await response.json();
+
+      // Update state with response data
+      setResponseMessage(responseData.message);
+      setJobID(responseData.jobID);
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to save job description.');
+      setResponseMessage('Error occurred while submitting the job.');
+      setJobID('');
     }
   };
 
   return (
     <div>
-      <h1>Job Description Form</h1>
+      <h1>Job Description Submission Form</h1>
       <form onSubmit={handleSubmit}>
-        <label>
-          User ID:
-          <input type="text" value={userID} onChange={e => setUserID(e.target.value)} />
-        </label><br />
-        <label>
-          Description:
-          <textarea value={description} onChange={e => setDescription(e.target.value)} />
-        </label><br />
+        <div>
+          <label htmlFor="jobTitle">Job Title: </label>
+          <input
+            type="text"
+            id="jobTitle"
+            value={jobTitle}
+            onChange={(e) => setJobTitle(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="jobDescription">Job Description: </label>
+          <textarea
+            id="jobDescription"
+            value={jobDescription}
+            onChange={(e) => setJobDescription(e.target.value)}
+            required
+          />
+        </div>
         <button type="submit">Submit</button>
       </form>
+      {responseMessage && <p>Response: {responseMessage}</p>}
+      {jobID && <p>Job ID: {jobID}</p>}
     </div>
   );
-}
+};
 
 export default App;
