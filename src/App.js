@@ -27,10 +27,17 @@ const App = () => {
 
       // Parsing JSON response
       const responseData = await response.json();
+      console.log('API Response:', responseData); // Debugging line
 
       // Update state with response data
-      setResponseMessage(responseData.message);
-      setJobID(responseData.jobID);
+      if (responseData.body) {
+        const parsedBody = JSON.parse(responseData.body);
+        setResponseMessage(parsedBody.message);
+        setJobID(parsedBody.jobID);
+      } else {
+        setResponseMessage('Job saved successfully, but no Job ID returned.');
+        setJobID('');
+      }
     } catch (error) {
       console.error('Error:', error);
       setResponseMessage('Error occurred while submitting the job.');
